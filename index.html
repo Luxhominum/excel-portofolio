@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pri Sambodo — Excel Portfolio</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0a0a0a;
+    --white: #f5f2eb;
+    --cream: #ede8dd;
+    --accent: #c8a96e;
+    --accent2: #4a7c6f;
+    --muted: #6b6760;
+    --card-bg: #111110;
+    --border: rgba(200,169,110,0.2);
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body { background: var(--black); color: var(--white); font-family: 'DM Sans', sans-serif; font-weight: 300; overflow-x: hidden; }
+
+  /* NAV */
+  nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; padding: 20px 60px; display: flex; justify-content: space-between; align-items: center; background: rgba(10,10,10,0.85); backdrop-filter: blur(20px); border-bottom: 1px solid rgba(255,255,255,0.04); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.1em; color: var(--white); text-decoration: none; }
+  .nav-logo span { color: var(--accent); }
+  .nav-links { display: flex; gap: 32px; list-style: none; }
+  .nav-links a { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--muted); text-decoration: none; transition: color 0.3s; }
+  .nav-links a:hover { color: var(--accent); }
+
+  /* HERO */
+  .hero { min-height: 100vh; display: grid; grid-template-columns: 1fr 1fr; position: relative; overflow: hidden; }
+  .hero-left { padding: 140px 60px 80px; display: flex; flex-direction: column; justify-content: center; }
+  .hero-label { font-family: 'DM Mono', monospace; font-size: 11px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--accent); margin-bottom: 24px; opacity: 0; animation: fadeUp 0.8s ease forwards 0.2s; }
+  .hero-name { font-family: 'Bebas Neue', sans-serif; font-size: clamp(64px, 8vw, 110px); line-height: 0.92; letter-spacing: 0.02em; opacity: 0; animation: fadeUp 0.8s ease forwards 0.4s; }
+  .hero-name span { color: var(--accent); display: block; }
+  .hero-tagline { margin-top: 32px; font-size: 15px; line-height: 1.75; color: rgba(245,242,235,0.55); max-width: 380px; opacity: 0; animation: fadeUp 0.8s ease forwards 0.6s; }
+  .hero-links { margin-top: 48px; display: flex; gap: 16px; flex-wrap: wrap; opacity: 0; animation: fadeUp 0.8s ease forwards 0.8s; }
+
+  .btn { display: inline-flex; align-items: center; gap: 8px; padding: 12px 24px; border: 1px solid var(--accent); color: var(--accent); text-decoration: none; font-family: 'DM Mono', monospace; font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; transition: all 0.3s ease; position: relative; overflow: hidden; }
+  .btn::before { content: ''; position: absolute; inset: 0; background: var(--accent); transform: translateX(-100%); transition: transform 0.3s ease; z-index: -1; }
+  .btn:hover::before { transform: translateX(0); }
+  .btn:hover { color: var(--black); }
+  .btn-solid { background: var(--accent); color: var(--black); font-weight: 500; }
+  .btn-solid::before { background: #e0c080; }
+  .btn-solid:hover { color: var(--black); }
+
+  .hero-right { position: relative; }
+  .hero-grid { position: absolute; inset: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 2px; background: #1a1a1a; opacity: 0; animation: fadeIn 1s ease forwards 0.6s; }
+  .hero-grid-cell { background: var(--card-bg); overflow: hidden; }
+  .hero-grid-cell img { width: 100%; height: 100%; object-fit: cover; opacity: 0.65; transition: opacity 0.4s, transform 0.6s; }
+  .hero-grid-cell:hover img { opacity: 0.9; transform: scale(1.04); }
+
+  /* STATS */
+  .stats-bar { background: var(--accent); padding: 18px 60px; display: flex; gap: 50px; align-items: center; overflow-x: auto; }
+  .stat-item { display: flex; align-items: baseline; gap: 8px; flex-shrink: 0; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: 34px; color: var(--black); }
+  .stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.12em; color: rgba(10,10,10,0.55); font-family: 'DM Mono', monospace; }
+  .stat-div { width: 1px; height: 28px; background: rgba(10,10,10,0.2); flex-shrink: 0; }
+
+  /* SECTION BASE */
+  .section-label { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--accent); margin-bottom: 14px; }
+  .section-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(48px, 6vw, 80px); line-height: 1; letter-spacing: 0.02em; }
+
+  /* PORTFOLIO */
+  .porto-section { padding: 120px 60px; background: var(--black); }
+  .porto-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 2px; margin-top: 60px; background: #1a1a1a; }
+  .porto-card { background: var(--card-bg); overflow: hidden; position: relative; }
+  .porto-card.featured { grid-column: 1 / -1; }
+  .porto-img-wrap { position: relative; overflow: hidden; }
+  .porto-card.featured .porto-img-wrap { aspect-ratio: 16/5.5; }
+  .porto-card:not(.featured) .porto-img-wrap { aspect-ratio: 16/7; }
+  .porto-img-wrap img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.6s ease, filter 0.4s; filter: saturate(0.75); }
+  .porto-card:hover .porto-img-wrap img { transform: scale(1.04); filter: saturate(1); }
+  .porto-img-overlay { position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 30%, rgba(10,10,10,0.92) 100%); pointer-events: none; }
+
+  .porto-gallery { display: grid; gap: 2px; background: #1a1a1a; }
+  .porto-card.featured .porto-gallery { grid-template-columns: repeat(5, 1fr); }
+  .porto-card:not(.featured) .porto-gallery { grid-template-columns: repeat(4, 1fr); }
+  .g-thumb { overflow: hidden; aspect-ratio: 4/3; cursor: zoom-in; }
+  .g-thumb img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.6) brightness(0.75); transition: all 0.4s; }
+  .g-thumb:hover img { filter: saturate(1) brightness(1); transform: scale(1.07); }
+
+  .porto-content { padding: 28px 36px 36px; position: relative; }
+  .porto-num { font-family: 'Bebas Neue', sans-serif; font-size: 80px; color: rgba(200,169,110,0.06); position: absolute; top: -10px; right: 24px; line-height: 1; pointer-events: none; }
+  .porto-meta { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .porto-badge { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.15em; text-transform: uppercase; color: var(--accent); border: 1px solid rgba(200,169,110,0.3); padding: 3px 10px; background: rgba(200,169,110,0.08); }
+  .porto-score { background: var(--accent); color: var(--black); font-family: 'DM Mono', monospace; font-size: 10px; font-weight: 500; padding: 3px 9px; }
+  .porto-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(28px, 3.5vw, 48px); line-height: 1; letter-spacing: 0.02em; margin-bottom: 14px; }
+  .porto-desc { font-size: 13.5px; line-height: 1.75; color: rgba(245,242,235,0.5); max-width: 560px; margin-bottom: 22px; }
+  .porto-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-bottom: 28px; }
+  .tag { background: rgba(255,255,255,0.04); border: 1px solid rgba(255,255,255,0.07); padding: 4px 11px; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.08em; color: rgba(245,242,235,0.45); text-transform: uppercase; }
+
+  /* COMING SOON CARD */
+  .card-soon { display: flex; align-items: center; justify-content: center; min-height: 280px; border: 1px dashed rgba(200,169,110,0.15); background: #0c0c0b; }
+  .card-soon-inner { text-align: center; padding: 40px; }
+  .card-soon-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.25em; color: var(--muted); text-transform: uppercase; margin-bottom: 14px; }
+  .card-soon-title { font-family: 'Bebas Neue', sans-serif; font-size: 34px; color: rgba(245,242,235,0.15); line-height: 1.1; }
+  .card-soon-sub { font-size: 11px; color: var(--muted); margin-top: 10px; font-family: 'DM Mono', monospace; }
+
+  /* ABOUT */
+  .about-section { background: var(--cream); color: var(--black); display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: center; padding: 120px 60px; }
+  .about-section .section-label { color: var(--accent2); }
+  .about-left .section-title { color: var(--black); }
+  .about-text { font-size: 14.5px; line-height: 1.8; color: rgba(10,10,10,0.6); margin-top: 20px; }
+  .about-right { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  .about-card { background: white; padding: 22px; border-left: 3px solid var(--accent); }
+  .about-card-title { font-family: 'Bebas Neue', sans-serif; font-size: 12px; letter-spacing: 0.12em; color: #999; margin-bottom: 6px; }
+  .about-card-val { font-family: 'Bebas Neue', sans-serif; font-size: 30px; color: var(--black); line-height: 1; }
+  .about-card-sub { font-size: 10px; color: #aaa; margin-top: 4px; }
+
+  /* CERT */
+  .cert-section { background: #0d0d0c; padding: 120px 60px; }
+  .cert-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 2px; margin-top: 60px; background: #1a1a1a; }
+  .cert-card { background: var(--card-bg); padding: 36px; transition: background 0.3s; }
+  .cert-card:hover { background: #161614; }
+  .cert-icon { font-size: 24px; margin-bottom: 20px; display: block; }
+  .cert-name { font-family: 'Bebas Neue', sans-serif; font-size: 20px; letter-spacing: 0.04em; margin-bottom: 6px; }
+  .cert-issuer { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.15em; color: var(--accent); text-transform: uppercase; margin-bottom: 14px; }
+  .cert-desc { font-size: 12.5px; color: rgba(245,242,235,0.4); line-height: 1.65; margin-bottom: 20px; }
+  .cert-link { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--accent); text-decoration: none; letter-spacing: 0.1em; text-transform: uppercase; display: flex; align-items: center; gap: 6px; transition: gap 0.3s; }
+  .cert-link:hover { gap: 12px; }
+
+  /* CONTACT */
+  .contact-section { background: var(--accent); color: var(--black); text-align: center; padding: 100px 60px; }
+  .contact-section .section-label { color: rgba(10,10,10,0.5); }
+  .contact-section .section-title { color: var(--black); font-size: clamp(52px, 9vw, 110px); margin-bottom: 20px; }
+  .contact-desc { font-size: 15px; color: rgba(10,10,10,0.6); max-width: 480px; margin: 0 auto 44px; line-height: 1.7; }
+  .contact-links { display: flex; justify-content: center; gap: 14px; flex-wrap: wrap; }
+  .contact-links .btn { border-color: rgba(10,10,10,0.5); color: var(--black); }
+  .contact-links .btn::before { background: var(--black); }
+  .contact-links .btn:hover { color: var(--accent); }
+
+  /* LIGHTBOX */
+  .lightbox { position: fixed; inset: 0; background: rgba(10,10,10,0.96); z-index: 1000; display: flex; align-items: center; justify-content: center; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+  .lightbox.active { opacity: 1; pointer-events: all; }
+  .lightbox img { max-width: 90vw; max-height: 86vh; object-fit: contain; box-shadow: 0 40px 100px rgba(0,0,0,0.8); }
+  .lb-close { position: absolute; top: 28px; right: 40px; font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em; color: var(--muted); cursor: pointer; text-transform: uppercase; transition: color 0.3s; }
+  .lb-close:hover { color: var(--white); }
+
+  /* ANIMS */
+  @keyframes fadeUp { from { opacity:0; transform:translateY(22px); } to { opacity:1; transform:translateY(0); } }
+  @keyframes fadeIn { from { opacity:0; } to { opacity:1; } }
+
+  /* SCROLL REVEAL */
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.visible { opacity: 1; transform: translateY(0); }
+
+  /* RESPONSIVE */
+  @media (max-width: 900px) {
+    .hero { grid-template-columns: 1fr; }
+    .hero-right { display: none; }
+    .hero-left { padding: 120px 30px 60px; }
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .stats-bar { padding: 18px 24px; gap: 28px; }
+    .porto-section, .about-section, .cert-section { padding: 80px 24px; }
+    .porto-grid { grid-template-columns: 1fr; }
+    .porto-card.featured { grid-column: 1; }
+    .porto-card.featured .porto-gallery { grid-template-columns: repeat(3, 1fr); }
+    .porto-card:not(.featured) .porto-gallery { grid-template-columns: repeat(2, 1fr); }
+    .about-section { grid-template-columns: 1fr; gap: 40px; }
+    .cert-grid { grid-template-columns: 1fr; }
+    .contact-section { padding: 80px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a href="#" class="nav-logo">Pri<span>.</span>S</a>
+  <ul class="nav-links">
+    <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#about">Tentang</a></li>
+    <li><a href="#certifications">Sertifikasi</a></li>
+    <li><a href="#contact">Kontak</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-left">
+    <p class="hero-label">Excel Portfolio · Data Professional</p>
+    <h1 class="hero-name">
+      Pri<br>
+      <span>Sambodo</span><br>
+      Nugroho
+    </h1>
+    <p class="hero-tagline">
+      Membangun sistem Excel yang fungsional, terstruktur, dan siap pakai — dari cash flow automation hingga scheduling system berbasis VBA.
+    </p>
+    <div class="hero-links">
+      <a href="#portfolio" class="btn btn-solid">Lihat Portfolio</a>
+      <a href="https://linkedin.com/in/prisambodo" target="_blank" class="btn">LinkedIn ↗</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="hero-grid">
+      <div class="hero-grid-cell"><img src="1777276574474_image.png" alt="CashFlow Dashboard"></div>
+      <div class="hero-grid-cell"><img src="1777276844071_image.png" alt="Liturgy Form"></div>
+      <div class="hero-grid-cell"><img src="1777276766055_image.png" alt="Database Petugas"></div>
+      <div class="hero-grid-cell"><img src="1777276788943_image.png" alt="Jadwal Output"></div>
+    </div>
+  </div>
+</div>
+
+<!-- STATS -->
+<div class="stats-bar">
+  <div class="stat-item"><span class="stat-num">4</span><span class="stat-label">Portfolio Projects</span></div>
+  <div class="stat-div"></div>
+  <div class="stat-item"><span class="stat-num">2</span><span class="stat-label">Certifications</span></div>
+  <div class="stat-div"></div>
+  <div class="stat-item"><span class="stat-num">VBA</span><span class="stat-label">Automation</span></div>
+  <div class="stat-div"></div>
+  <div class="stat-item"><span class="stat-num">S1</span><span class="stat-label">Psikologi UGM</span></div>
+  <div class="stat-div"></div>
+  <div class="stat-item"><span class="stat-num">9.5</span><span class="stat-label">Top Score Project</span></div>
+</div>
+
+<!-- PORTFOLIO -->
+<section class="porto-section" id="portfolio">
+  <p class="section-label">// 01 — Selected Works</p>
+  <h2 class="section-title">Portfolio</h2>
+
+  <div class="porto-grid">
+
+    <!-- LITURGY — FEATURED -->
+    <div class="porto-card featured reveal">
+      <div class="porto-img-wrap">
+        <img src="1777276788943_image.png" alt="Liturgy Scheduler Output">
+        <div class="porto-img-overlay"></div>
+      </div>
+      <div class="porto-gallery">
+        <div class="g-thumb" onclick="lb('1777276844071_image.png')"><img src="1777276844071_image.png" alt="VBA Form"></div>
+        <div class="g-thumb" onclick="lb('1777276766055_image.png')"><img src="1777276766055_image.png" alt="Database Petugas"></div>
+        <div class="g-thumb" onclick="lb('1777276821753_image.png')"><img src="1777276821753_image.png" alt="Cetak Jadwal"></div>
+        <div class="g-thumb" onclick="lb('1777276741992_image.png')"><img src="1777276741992_image.png" alt="Panduan"></div>
+        <div class="g-thumb" onclick="lb('1777276788943_image.png')"><img src="1777276788943_image.png" alt="Output"></div>
+      </div>
+      <div class="porto-content">
+        <span class="porto-num">01</span>
+        <div class="porto-meta">
+          <span class="porto-badge">Featured · Liturgi</span>
+          <span class="porto-score">9.5 / 10</span>
+        </div>
+        <h3 class="porto-title">Liturgy Schedule<br>Management System</h3>
+        <p class="porto-desc">Sistem penjadwalan petugas liturgi berbasis Excel dengan VBA UserForm multi-form. Mengelola 3 sesi misa, 6 constraint berlapis, wave-based input, cache dictionary, dan export PDF — dirancang untuk gereja dengan ratusan petugas aktif.</p>
+        <div class="porto-tags">
+          <span class="tag">VBA UserForm</span>
+          <span class="tag">6-Layer Constraint</span>
+          <span class="tag">Wave Input</span>
+          <span class="tag">Export PDF</span>
+          <span class="tag">3 Sesi Misa</span>
+          <span class="tag">Cache Dictionary</span>
+          <span class="tag">4 Modul VBA</span>
+        </div>
+        <a href="https://drive.google.com/file/d/19-QmZLJ6t4uI4OlZahXonJgzVsvdbtps/view?usp=drive_link" target="_blank" class="btn btn-solid">Download File ↗</a>
+      </div>
+    </div>
+
+    <!-- CASHFLOW -->
+    <div class="porto-card reveal">
+      <div class="porto-img-wrap">
+        <img src="1777276574474_image.png" alt="CashFlow Dashboard">
+        <div class="porto-img-overlay"></div>
+      </div>
+      <div class="porto-gallery">
+        <div class="g-thumb" onclick="lb('1777276574474_image.png')"><img src="1777276574474_image.png" alt="Dashboard"></div>
+        <div class="g-thumb" onclick="lb('1777276603793_image.png')"><img src="1777276603793_image.png" alt="Charts"></div>
+        <div class="g-thumb" onclick="lb('1777276635297_image.png')"><img src="1777276635297_image.png" alt="Transaksi"></div>
+        <div class="g-thumb" onclick="lb('1777276658517_image.png')"><img src="1777276658517_image.png" alt="Pencarian"></div>
+      </div>
+      <div class="porto-content">
+        <span class="porto-num">02</span>
+        <div class="porto-meta">
+          <span class="porto-badge">Finance System</span>
+          <span class="porto-score">8.3 / 10</span>
+        </div>
+        <h3 class="porto-title">Cash Flow<br>Automation System</h3>
+        <p class="porto-desc">Sistem pencatatan dan analisis arus kas perusahaan dengan transaction ID otomatis, filter multi-kriteria, running balance real-time, dan dashboard interaktif dengan pivot chart per departemen.</p>
+        <div class="porto-tags">
+          <span class="tag">Auto TRX ID</span>
+          <span class="tag">Running Balance</span>
+          <span class="tag">Pivot Dashboard</span>
+          <span class="tag">Multi-filter Search</span>
+          <span class="tag">4 Departemen</span>
+        </div>
+        <a href="https://drive.google.com/file/d/1_fnQCIMbX7pEy65Po_EKdRpMIO5rf5Yi/view?usp=drive_link" target="_blank" class="btn btn-solid">Download File ↗</a>
+      </div>
+    </div>
+
+    <!-- COMING SOON -->
+    <div class="porto-card card-soon reveal">
+      <div class="card-soon-inner">
+        <p class="card-soon-label">Coming Soon</p>
+        <p class="card-soon-title">Inventory<br>Management<br>System</p>
+        <p class="card-soon-sub">Porto Swalayan · Est. 8.0/10</p>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about-section" id="about">
+  <div class="about-left reveal">
+    <p class="section-label">// 02 — Background</p>
+    <h2 class="section-title">Tentang<br>Saya</h2>
+    <p class="about-text">Lulusan S1 Psikologi UGM dengan pengalaman lintas bidang — dari administrasi rekrutmen skala besar (400+ pelamar), sistem pelaporan digital, hingga koordinasi lapangan. Kini fokus mengembangkan kompetensi Excel & data untuk berkarir di bidang HRD, Administrasi, atau AI Training.</p>
+    <p class="about-text" style="margin-top:14px;">Berbasis di Solo Raya. Terbuka untuk posisi di Semarang, Yogyakarta, maupun remote.</p>
+    <div style="margin-top:32px; display:flex; gap:12px; flex-wrap:wrap;">
+      <a href="mailto:aloysiuz@gmail.com" class="btn" style="border-color:#333; color:#333;">aloysiuz@gmail.com</a>
+      <a href="https://linkedin.com/in/prisambodo" target="_blank" class="btn" style="border-color:#333; color:#333;">LinkedIn ↗</a>
+    </div>
+  </div>
+  <div class="about-right">
+    <div class="about-card reveal"><p class="about-card-title">Pendidikan</p><p class="about-card-val">S1</p><p class="about-card-sub">Psikologi UGM · IPK 3.39</p></div>
+    <div class="about-card reveal"><p class="about-card-title">Penghargaan</p><p class="about-card-val">★ 1st</p><p class="about-card-sub">Staf Inovatif se-Kab Boyolali 2024</p></div>
+    <div class="about-card reveal"><p class="about-card-title">Rekrutmen</p><p class="about-card-val">400+</p><p class="about-card-sub">Pelamar dikelola Pemilu 2024</p></div>
+    <div class="about-card reveal"><p class="about-card-title">Lokasi</p><p class="about-card-val">Solo</p><p class="about-card-sub">Solo Raya · Semarang · Yogya · Remote</p></div>
+  </div>
+</section>
+
+<!-- CERT -->
+<section class="cert-section" id="certifications">
+  <p class="section-label">// 03 — Credentials</p>
+  <h2 class="section-title">Sertifikasi</h2>
+  <div class="cert-grid">
+    <div class="cert-card reveal">
+      <span class="cert-icon">🏆</span>
+      <p class="cert-name">Microsoft Excel Professional Certificate</p>
+      <p class="cert-issuer">Microsoft via Coursera · April 2026</p>
+      <p class="cert-desc">Sertifikasi resmi Microsoft untuk Excel tingkat profesional — analisis data, formula lanjutan, dan visualisasi bisnis.</p>
+      <a href="https://coursera.org/verify/professional-cert/YVDIEJXMJ4NZ" target="_blank" class="cert-link">Verifikasi Sertifikat →</a>
+    </div>
+    <div class="cert-card reveal">
+      <span class="cert-icon">📊</span>
+      <p class="cert-name">Excel Skills for Business Specialization</p>
+      <p class="cert-issuer">Macquarie University via Coursera · April 2026</p>
+      <p class="cert-desc">Spesialisasi 4-kursus dari Macquarie University — dari Excel essentials hingga advanced formulas dan data analysis bisnis.</p>
+      <a href="https://coursera.org/verify/specialization/KELFCJZ18NHF" target="_blank" class="cert-link">Verifikasi Sertifikat →</a>
+    </div>
+    <div class="cert-card reveal" style="background:transparent; border: 1px dashed rgba(200,169,110,0.12);">
+      <span class="cert-icon" style="opacity:0.3;">🎯</span>
+      <p class="cert-name" style="color:rgba(245,242,235,0.25);">MOS Excel Associate</p>
+      <p class="cert-issuer" style="color:rgba(200,169,110,0.35);">Certiport · Target 2026</p>
+      <p class="cert-desc">Microsoft Office Specialist — dalam rencana sebagai kredensial industri tambahan.</p>
+      <span style="font-family:'DM Mono',monospace; font-size:9px; color:rgba(200,169,110,0.35); letter-spacing:0.15em; text-transform:uppercase;">In Progress</span>
+    </div>
+  </div>
+</section>
+
+<!-- CONTACT -->
+<section class="contact-section" id="contact">
+  <p class="section-label">// 04 — Get In Touch</p>
+  <h2 class="section-title">Let's<br>Connect</h2>
+  <p class="contact-desc">Terbuka untuk posisi HRD, Rekrutmen, Administrasi, atau AI Trainer — di Solo Raya, Semarang, Yogyakarta, maupun remote.</p>
+  <div class="contact-links">
+    <a href="mailto:aloysiuz@gmail.com" class="btn">Email ↗</a>
+    <a href="https://linkedin.com/in/prisambodo" target="_blank" class="btn">LinkedIn ↗</a>
+    <a href="tel:+6281390114669" class="btn">0813-9011-4669</a>
+  </div>
+</section>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLb()">
+  <div class="lb-close">ESC / Tutup</div>
+  <img id="lb-img" src="" alt="">
+</div>
+
+<script>
+  function lb(src) {
+    document.getElementById('lb-img').src = src;
+    document.getElementById('lightbox').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLb() {
+    document.getElementById('lightbox').classList.remove('active');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLb(); });
+
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+  }, { threshold: 0.08 });
+  document.querySelectorAll('.reveal').forEach(el => obs.observe(el));
+</script>
+
+</body>
+</html>
